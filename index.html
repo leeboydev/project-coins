@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🪙 Jogo das Moedas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <button class="settings-btn" id="settings-btn" onclick="openSettings()">
+    <i class="fa-solid fa-gear"></i>
+  </button>
+
+  <header>
+    <h1><!-- 🪙 --> Se ganhássemos uma moeda toda vez que...</h1>
+    <p class="subtitle">Você conhece as regras!</p>
+  </header>
+
+  <div class="modal-overlay" id="modal-overlay" onclick="closeOnOverlay(event)">
+    <div class="modal">
+      <button class="modal-close" onclick="closeSettings()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="modal-icon">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2 class="modal-title">Redefinir contagem</h2>
+      <p class="modal-desc">Digite a senha para confirmar</p>
+      <div class="password-field">
+        <input
+          type="password"
+          id="password-input"
+          class="password-input"
+          maxlength="4"
+          placeholder="••••"
+          onkeydown="handlePasswordKey(event)"
+        />
+        <button class="toggle-pw" onclick="togglePassword()">
+          <i class="fa-solid fa-eye" id="eye-icon"></i>
+        </button>
+      </div>
+      <p class="modal-error" id="modal-error"></p>
+      <button class="modal-confirm" onclick="confirmReset()">Confirmar</button>
+    </div>
+  </div>
+
+  <main class="arena">
+
+    <div class="card card--wal" id="card-wal">
+      <div class="avatar-ring">
+        <img
+          src="images/law.png"
+          alt="Wal"
+          class="avatar"
+        />
+      </div>
+      <h2 class="player-name">Wal</h2>
+      <div class="score-display">
+        <span class="score-number" id="counter-wal">0</span>
+        <span class="score-label">moedas</span>
+      </div>
+      <button class="give-btn give-btn--wal" id="btn-give-wal" onclick="giveCoins('wal', 'lay')">
+        Moeda para Lay <i class="fa-solid fa-hand-holding-dollar"></i>
+      </button>
+    </div>
+
+    <div class="vs-area">
+      <div class="vs-badge">VS</div>
+    </div>
+
+    <div class="card card--lay" id="card-lay">
+      <div class="avatar-ring">
+        <img
+          src="images/lya.png"
+          alt="Lay"
+          class="avatar"
+        />
+      </div>
+      <h2 class="player-name">Lay</h2>
+      <div class="score-display">
+        <span class="score-number" id="counter-lay">0</span>
+        <span class="score-label">moedas</span>
+      </div>
+      <button class="give-btn give-btn--lay" id="btn-give-lay" onclick="giveCoins('lay', 'wal')">
+        <i class="fa-solid fa-hand-holding-dollar fa-flip-horizontal"></i> Moeda para Wal
+      </button>
+    </div>
+
+  </main>
+
+  <div class="leader-banner" id="leader-banner">Empate!</div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(0,0,0,0.92) 0%, rgba(13,13,26,0.94) 50%, rgba(13,26,51,0.93) 100%),
+    url('images/fundo.png') center center / cover no-repeat fixed;
+  font-family: 'Nunito', sans-serif;
+  color: #fff;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, white, transparent),
+    radial-gradient(1px 1px at 25% 55%, white, transparent),
+    radial-gradient(1px 1px at 40% 15%, white, transparent),
+    radial-gradient(1px 1px at 55% 75%, white, transparent),
+    radial-gradient(1px 1px at 70% 35%, white, transparent),
+    radial-gradient(1px 1px at 85% 60%, white, transparent),
+    radial-gradient(1px 1px at 5%  80%, white, transparent),
+    radial-gradient(1px 1px at 92% 10%, white, transparent),
+    radial-gradient(2px 2px at 18% 90%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(2px 2px at 63% 42%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(2px 2px at 78% 85%, rgba(255,255,255,0.5), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+header {
+  text-align: center;
+  padding: 2.5rem 1rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+header h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: 2px;
+  text-shadow: 0 0 24px rgba(255, 215, 0, 0.5);
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  opacity: 0.65;
+  margin-top: 0.4rem;
+  font-weight: 700;
+}
+
+/* Arena */
+
+.arena {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+/* Cards */
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  width: 260px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card--wal {
+  border-color: rgba(255, 209, 102, 0.4);
+  box-shadow: 0 8px 32px rgba(255, 209, 102, 0.15);
+}
+
+.card--lay {
+  border-color: rgba(69, 123, 157, 0.4);
+  box-shadow: 0 8px 32px rgba(69, 123, 157, 0.15);
+}
+
+/* Avatar */
+
+.avatar-ring {
+  width: 110px;
+  height: 110px;
+  border-radius: 16px;
+  margin: 0 auto 1rem;
+  padding: 3px;
+  background: linear-gradient(135deg, #FFD166, #F4A261);
+}
+
+.card--lay .avatar-ring {
+  background: linear-gradient(135deg, #A8DADC, #457B9D);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 13px;
+  background: #1a1a2e;
+  display: block;
+  object-fit: cover;
+}
+
+/* Score */
+
+.player-name {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.card--wal .player-name { color: #FFD166; }
+.card--lay .player-name { color: #A8DADC; }
+
+.score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.score-number {
+  font-family: 'Fredoka One', cursive;
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.card--wal .score-number {
+  color: #FFD166;
+  text-shadow: 0 0 20px rgba(255, 209, 102, 0.5);
+}
+
+.card--lay .score-number {
+  color: #A8DADC;
+  text-shadow: 0 0 20px rgba(168, 218, 220, 0.5);
+}
+
+.score-number.bounce {
+  animation: bounce-pop 0.5s ease;
+}
+
+@keyframes bounce-pop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.6); }
+  65%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+.score-label {
+  font-size: 0.8rem;
+  opacity: 0.55;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 2px;
+}
+
+/* Buttons */
+
+.give-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+  letter-spacing: 0.3px;
+}
+
+.give-btn--wal {
+  background: linear-gradient(135deg, #FFD166, #F4A261);
+  color: #1a1a2e;
+  box-shadow: 0 4px 16px rgba(255, 209, 102, 0.45);
+}
+
+.give-btn--lay {
+  background: linear-gradient(135deg, #A8DADC, #457B9D);
+  color: #1a1a2e;
+  box-shadow: 0 4px 16px rgba(69, 123, 157, 0.45);
+}
+
+.give-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+}
+
+.give-btn:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.95);
+}
+
+.give-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* VS */
+
+.vs-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vs-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Leader banner */
+
+.leader-banner {
+  text-align: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.65);
+  padding: 0.5rem 1rem 2.5rem;
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+/* Settings button */
+
+.settings-btn {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  z-index: 100;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.4rem;
+  transition: color 0.2s, transform 0.3s;
+}
+
+.settings-btn:hover {
+  color: rgba(255, 255, 255, 0.75);
+  transform: rotate(60deg);
+}
+
+/* Modal */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  background: rgba(20, 20, 35, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 2.5rem 2rem 2rem;
+  width: 320px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  transform: translateY(20px);
+  transition: transform 0.25s ease;
+}
+
+.modal-overlay.open .modal {
+  transform: translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.modal-close:hover { color: #fff; }
+
+.modal-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFD166, #A8DADC);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.2rem;
+  font-size: 1.4rem;
+  color: #1a1a2e;
+}
+
+.modal-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.modal-desc {
+  font-size: 0.85rem;
+  opacity: 0.5;
+  margin-bottom: 1.5rem;
+}
+
+.password-field {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.password-input {
+  width: 100%;
+  padding: 0.85rem 3rem 0.85rem 1.2rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 1.4rem;
+  letter-spacing: 6px;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.password-input:focus {
+  border-color: rgba(168, 218, 220, 0.5);
+}
+
+.password-input::-ms-reveal,
+.password-input::-webkit-contacts-auto-fill-button,
+.password-input::-webkit-credentials-auto-fill-button {
+  display: none;
+}
+
+.password-input::placeholder {
+  letter-spacing: 4px;
+  opacity: 0.25;
+  font-size: 1.2rem;
+}
+
+.toggle-pw {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.toggle-pw:hover { color: #fff; }
+
+.modal-error {
+  font-size: 0.8rem;
+  color: #E63946;
+  min-height: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+.modal-confirm {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 50px;
+  border: none;
+  background: linear-gradient(135deg, #FFD166, #A8DADC);
+  color: #1a1a2e;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.15s;
+}
+
+.modal-confirm:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+/* Flying coin (created by JS) */
+
+.flying-coin-anim {
+  position: fixed;
+  font-size: 2.2rem;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.9));
+}
+
+/* Responsive */
+
+@media (max-width: 620px) {
+  .arena {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card {
+    width: 90%;
+    max-width: 300px;
+    padding: 1.5rem;
+  }
+
+  .vs-badge {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+  }
+}
