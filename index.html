@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E se..</title>
+  <title>Nossos Registros</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -16,9 +16,18 @@
   </button>
 
   <header>
-    <h1><!-- 🪙 --> Se ganhássemos uma moeda toda vez que...</h1>
+    <h1>Nossos Registros...</h1>
     <p class="subtitle">Você conhece as regras!</p>
   </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" id="tab-btn-moedas" role="tab" aria-selected="true" onclick="switchTab('moedas')">
+      <i class="fa-solid fa-coins"></i> Moedas
+    </button>
+    <button class="tab-btn" id="tab-btn-visitas" role="tab" aria-selected="false" onclick="switchTab('visitas')">
+      <i class="fa-solid fa-plane"></i> Visitas
+    </button>
+  </div>
 
   <div class="modal-overlay" id="modal-overlay" onclick="closeOnOverlay(event)">
     <div class="modal">
@@ -48,51 +57,206 @@
     </div>
   </div>
 
-  <main class="arena">
-
-    <div class="card card--wal" id="card-wal">
-      <div class="avatar-ring">
-        <img
-          src="images/law.png"
-          alt="Wal"
-          class="avatar"
-        />
-      </div>
-      <h2 class="player-name">Wal</h2>
-      <div class="score-display">
-        <span class="score-number" id="counter-wal">0</span>
-        <span class="score-label">moedas</span>
-      </div>
-      <button class="give-btn give-btn--wal" id="btn-give-wal" onclick="giveCoins('wal', 'lay')">
-        Moeda para Lay <i class="fa-solid fa-hand-holding-dollar"></i>
+  <div class="modal-overlay" id="visit-modal-overlay" onclick="closeOnVisitOverlay(event)">
+    <div class="modal">
+      <button class="modal-close" onclick="closeVisitModal()">
+        <i class="fa-solid fa-xmark"></i>
       </button>
-    </div>
-
-    <div class="vs-area">
-      <div class="vs-badge">VS</div>
-    </div>
-
-    <div class="card card--lay" id="card-lay">
-      <div class="avatar-ring">
-        <img
-          src="images/lya.png"
-          alt="Lay"
-          class="avatar"
-        />
+      <div class="modal-icon modal-icon--visit">
+        <i class="fa-solid fa-stamp" id="visit-modal-icon"></i>
       </div>
-      <h2 class="player-name">Lay</h2>
-      <div class="score-display">
-        <span class="score-number" id="counter-lay">0</span>
-        <span class="score-label">moedas</span>
+      <h2 class="modal-title">Registrar visita</h2>
+      <p class="modal-desc" id="visit-modal-desc"></p>
+      <div class="modal-field">
+        <input type="date" class="visit-date-input" id="visit-modal-date">
       </div>
-      <button class="give-btn give-btn--lay" id="btn-give-lay" onclick="giveCoins('lay', 'wal')">
-        <i class="fa-solid fa-hand-holding-dollar fa-flip-horizontal"></i> Moeda para Wal
-      </button>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeVisitModal()">Cancelar</button>
+        <button class="modal-confirm" id="visit-modal-confirm" onclick="confirmVisit()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="tab-panel" id="panel-moedas">
+
+    <main class="arena">
+
+      <div class="card card--wal" id="card-wal">
+        <div class="avatar-ring">
+          <img
+            src="images/law.png"
+            alt="Wal"
+            class="avatar"
+          />
+        </div>
+        <h2 class="player-name">Wal</h2>
+        <div class="score-display">
+          <span class="score-number" id="counter-wal">0</span>
+          <span class="score-label">moedas</span>
+        </div>
+        <button class="give-btn give-btn--wal" id="btn-give-wal" onclick="giveCoins('wal', 'lay')">
+          Moeda para Lay <i class="fa-solid fa-hand-holding-dollar"></i>
+        </button>
+      </div>
+
+      <div class="vs-area">
+        <div class="vs-badge">VS</div>
+      </div>
+
+      <div class="card card--lay" id="card-lay">
+        <div class="avatar-ring">
+          <img
+            src="images/lya.png"
+            alt="Lay"
+            class="avatar"
+          />
+        </div>
+        <h2 class="player-name">Lay</h2>
+        <div class="score-display">
+          <span class="score-number" id="counter-lay">0</span>
+          <span class="score-label">moedas</span>
+        </div>
+        <button class="give-btn give-btn--lay" id="btn-give-lay" onclick="giveCoins('lay', 'wal')">
+          <i class="fa-solid fa-hand-holding-dollar fa-flip-horizontal"></i> Moeda para Wal
+        </button>
+      </div>
+
+    </main>
+
+    <div class="leader-banner" id="leader-banner">Empate!</div>
+
+  </section>
+
+  <section class="tab-panel" id="panel-visitas" hidden>
+
+    <div class="passport-viewer">
+
+      <svg class="route-connector" viewBox="0 0 1000 220" preserveAspectRatio="none" aria-hidden="true">
+        <path class="route-connector-path" d="M 20 190 Q 500 10 980 190"></path>
+      </svg>
+      <i class="fa-solid fa-plane route-connector-plane"></i>
+
+      <div class="passport passport--wal" id="passport-wal" data-owner="wal">
+        <div class="passport-header">
+          <span class="passport-kicker"><i class="fa-solid fa-passport"></i> Passaporte de visitas</span>
+          <span class="passport-flag">🇧🇷 Manaus</span>
+        </div>
+
+        <div class="passport-id">
+          <div class="passport-photo">
+            <img src="images/psp2.jpeg" alt="Wal">
+          </div>
+          <div class="passport-id-text">
+            <h2 class="passport-name">Waldecir da Silva Martins</h2>
+            <p class="passport-role">Visitante oficial de Lay</p>
+          </div>
+        </div>
+
+        <div class="passport-main-stat">
+          <span class="passport-count" id="visit-counter-wal">0</span>
+          <span class="passport-count-label">visitas registradas</span>
+        </div>
+
+        <div class="passport-details">
+          <div class="passport-detail">
+            <span class="detail-label">Autoridade</span>
+            <span class="detail-value">Burgers &amp; Burgers</span>
+          </div>
+          <div class="passport-detail">
+            <span class="detail-label">Local de emissão</span>
+            <span class="detail-value">Manaus</span>
+          </div>
+          <div class="passport-detail">
+            <span class="detail-label">Membro desde</span>
+            <span class="detail-value" id="passport-member-since-wal">—</span>
+          </div>
+        </div>
+
+        <div class="passport-substats">
+          <div class="passport-substat">
+            <span class="substat-value" id="visit-last-wal">—</span>
+            <span class="substat-label">Última visita</span>
+          </div>
+          <div class="passport-substat">
+            <span class="substat-value" id="visit-streak-wal">—</span>
+            <span class="substat-label">Sequência</span>
+          </div>
+        </div>
+
+        <div class="passport-stamps" id="visit-stamps-wal"></div>
+
+        <button class="passport-btn" id="btn-visit-wal" onclick="openVisitModal('wal')">
+          Registrar visita <i class="fa-solid fa-stamp"></i>
+        </button>
+
+        <p class="passport-mrz" id="passport-mrz-wal"></p>
+      </div>
+
+      <div class="route-connector-vertical" aria-hidden="true">
+        <span class="route-connector-vertical-line"></span>
+        <i class="fa-solid fa-plane"></i>
+        <span class="route-connector-vertical-line"></span>
+      </div>
+
+      <div class="passport passport--lay" id="passport-lay" data-owner="lay">
+        <div class="passport-header">
+          <span class="passport-kicker"><i class="fa-solid fa-passport"></i> Passaporte de visitas</span>
+          <span class="passport-flag">🇧🇷 Manaus</span>
+        </div>
+
+        <div class="passport-id">
+          <div class="passport-photo">
+            <img src="images/psp1.jpeg" alt="Lay">
+          </div>
+          <div class="passport-id-text">
+            <h2 class="passport-name">Layandra Marques Calixto de Oliveira</h2>
+            <p class="passport-role">Visitante oficial de Wal</p>
+          </div>
+        </div>
+
+        <div class="passport-main-stat">
+          <span class="passport-count" id="visit-counter-lay">0</span>
+          <span class="passport-count-label">visitas registradas</span>
+        </div>
+
+        <div class="passport-details">
+          <div class="passport-detail">
+            <span class="detail-label">Autoridade</span>
+            <span class="detail-value">Mizura Bar</span>
+          </div>
+          <div class="passport-detail">
+            <span class="detail-label">Local de emissão</span>
+            <span class="detail-value">Manaus</span>
+          </div>
+          <div class="passport-detail">
+            <span class="detail-label">Membro desde</span>
+            <span class="detail-value" id="passport-member-since-lay">—</span>
+          </div>
+        </div>
+
+        <div class="passport-substats">
+          <div class="passport-substat">
+            <span class="substat-value" id="visit-last-lay">—</span>
+            <span class="substat-label">Última visita</span>
+          </div>
+          <div class="passport-substat">
+            <span class="substat-value" id="visit-streak-lay">—</span>
+            <span class="substat-label">Sequência</span>
+          </div>
+        </div>
+
+        <div class="passport-stamps" id="visit-stamps-lay"></div>
+
+        <button class="passport-btn" id="btn-visit-lay" onclick="openVisitModal('lay')">
+          Registrar visita <i class="fa-solid fa-stamp"></i>
+        </button>
+
+        <p class="passport-mrz" id="passport-mrz-lay"></p>
+      </div>
+
     </div>
 
-  </main>
-
-  <div class="leader-banner" id="leader-banner">Empate!</div>
+  </section>
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>

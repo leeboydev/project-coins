@@ -11,8 +11,18 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const coinsRef = db.ref('coins');
+const visitsRef = db.ref('visits');
 
 const state = { wal: 0, lay: 0 };
+const visitState = {
+  wal: { count: 0, history: [] },
+  lay: { count: 0, history: [] }
+};
+
+const MEMBER_SINCE = new Date(2026, 5, 2); // 02/06/2026
+
+document.getElementById('visit-modal-date').max = new Date().toISOString().slice(0, 10);
+let pendingVisitFrom = null;
 
 // Escuta mudanças em tempo real e atualiza a UI
 coinsRef.on('value', (snapshot) => {
@@ -25,6 +35,194 @@ coinsRef.on('value', (snapshot) => {
   updateLeaderBanner();
   setButtonsDisabled(false);
 });
+
+visitsRef.on('value', (snapshot) => {
+  const data = snapshot.val() || {};
+
+  ['wal', 'lay'].forEach((person) => {
+    const historyObj = (data[person] && data[person].history) || {};
+    const history = Object.values(historyObj).sort((a, b) => b - a);
+
+    visitState[person].count = history.length;
+    visitState[person].history = history;
+
+    updateVisitCounter(person);
+    updateVisitSubstats(person);
+    renderStamps(person);
+    renderMRZ(person);
+  });
+});
+
+function switchTab(tab) {
+  document.getElementById('panel-moedas').hidden = tab !== 'moedas';
+  document.getElementById('panel-visitas').hidden = tab !== 'visitas';
+  document.getElementById('tab-btn-moedas').classList.toggle('active', tab === 'moedas');
+  document.getElementById('tab-btn-visitas').classList.toggle('active', tab === 'visitas');
+  document.getElementById('tab-btn-moedas').setAttribute('aria-selected', tab === 'moedas');
+  document.getElementById('tab-btn-visitas').setAttribute('aria-selected', tab === 'visitas');
+}
+
+function updateVisitCounter(person) {
+  const el = document.getElementById(`visit-counter-${person}`);
+  const prev = parseInt(el.textContent) || 0;
+  el.textContent = visitState[person].count;
+  if (visitState[person].count !== prev) {
+    el.classList.remove('bounce');
+    void el.offsetWidth;
+    el.classList.add('bounce');
+  }
+}
+
+function updateVisitSubstats(person) {
+  const history = visitState[person].history;
+  const lastEl = document.getElementById(`visit-last-${person}`);
+  const streakEl = document.getElementById(`visit-streak-${person}`);
+  const memberEl = document.getElementById(`passport-member-since-${person}`);
+
+  lastEl.textContent = history.length ? formatPassportDate(history[0]) : '—';
+
+  const streak = calculateStreakMonths(history);
+  streakEl.textContent = streak === 0 ? '—' : `${streak} ${streak === 1 ? 'mês' : 'meses'}`;
+
+  memberEl.textContent = formatPassportDate(MEMBER_SINCE.getTime());
+}
+
+function calculateStreakMonths(historyDesc) {
+  if (historyDesc.length === 0) return 0;
+
+  const monthKey = (ts) => {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${d.getMonth()}`;
+  };
+
+  const monthsWithVisit = new Set(historyDesc.map(monthKey));
+  const cursor = new Date(historyDesc[0]);
+  let streak = 0;
+
+  while (monthsWithVisit.has(monthKey(cursor.getTime()))) {
+    streak++;
+    cursor.setMonth(cursor.getMonth() - 1);
+  }
+
+  return streak;
+}
+
+function formatPassportDate(timestamp) {
+  const date = new Date(timestamp);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day} ${month} ${year}`;
+}
+
+function renderStamps(person) {
+  const container = document.getElementById(`visit-stamps-${person}`);
+  const history = visitState[person].history;
+  container.innerHTML = '';
+
+  if (history.length === 0) {
+    const empty = document.createElement('span');
+    empty.className = 'stamp-badge stamp-badge--empty';
+    empty.textContent = 'Nenhum carimbo ainda';
+    container.appendChild(empty);
+    return;
+  }
+
+  history.forEach((timestamp) => {
+    const date = new Date(timestamp);
+    const badge = document.createElement('div');
+    badge.className = 'stamp-badge';
+    badge.textContent = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+    badge.title = formatVisitDateTime(timestamp);
+    container.appendChild(badge);
+  });
+}
+
+function formatVisitDateTime(timestamp) {
+  const date = new Date(timestamp);
+  const datePart = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const timePart = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  return `${datePart} às ${timePart}`;
+}
+
+function renderMRZ(person) {
+  const name = person === 'wal' ? 'WAL' : 'LAY';
+  const count = visitState[person].count;
+  const memberCompact = formatPassportDate(MEMBER_SINCE.getTime()).replace(/ /g, '');
+
+  const line1 = padMRZ(`${name}<<VISITANTE<<MANAUS`, 40);
+  const line2 = padMRZ(`${String(count).padStart(3, '0')}BRA<<MEMBER${memberCompact}<<VOEGOL.COM.BR`, 40);
+
+  document.getElementById(`passport-mrz-${person}`).textContent = `${line1}\n${line2}`;
+}
+
+function padMRZ(text, length) {
+  const clean = text.toUpperCase();
+  return clean.length >= length ? clean.slice(0, length) : clean + '<'.repeat(length - clean.length);
+}
+
+function openVisitModal(from) {
+  const otherName = from === 'wal' ? 'Lay' : 'Wal';
+  const stampColor = from === 'wal' ? '#A8DADC' : '#FFD166';
+
+  pendingVisitFrom = from;
+  document.getElementById('visit-modal-desc').textContent =
+    `Você visitou ${otherName}? Receba seu carimbo de região, insira a data ou deixe em branco para contar como data de hoje.`;
+  document.getElementById('visit-modal-icon').style.color = stampColor;
+  document.getElementById('visit-modal-date').value = '';
+  document.getElementById('visit-modal-confirm').disabled = false;
+  document.getElementById('visit-modal-overlay').classList.add('open');
+}
+
+function closeVisitModal() {
+  document.getElementById('visit-modal-overlay').classList.remove('open');
+  pendingVisitFrom = null;
+}
+
+function closeOnVisitOverlay(event) {
+  if (event.target === document.getElementById('visit-modal-overlay')) closeVisitModal();
+}
+
+function confirmVisit() {
+  const from = pendingVisitFrom;
+  if (!from) return;
+
+  const dateValue = document.getElementById('visit-modal-date').value;
+  const visitTimestamp = dateValue
+    ? new Date(`${dateValue}T12:00:00`).getTime()
+    : Date.now();
+
+  document.getElementById('visit-modal-confirm').disabled = true;
+  closeVisitModal();
+  runStampAnimation(from, visitTimestamp);
+}
+
+function runStampAnimation(from, visitTimestamp) {
+  const passportEl = document.getElementById(`passport-${from}`);
+  passportEl.classList.add('passport-shake');
+
+  const stamp = document.createElement('div');
+  stamp.className = 'stamp-slam';
+  stamp.innerHTML = '<i class="fa-solid fa-stamp"></i>';
+  passportEl.appendChild(stamp);
+
+  const anim = stamp.animate(
+    [
+      { transform: 'translate(-50%, -50%) scale(3) rotate(-25deg)', opacity: 0 },
+      { transform: 'translate(-50%, -50%) scale(1) rotate(-12deg)', opacity: 1, offset: 0.4 },
+      { transform: 'translate(-50%, -50%) scale(1.05) rotate(-12deg)', opacity: 1, offset: 0.55 },
+      { transform: 'translate(-50%, -50%) scale(1) rotate(-12deg)', opacity: 1, offset: 0.75 },
+      { transform: 'translate(-50%, -50%) scale(1) rotate(-12deg)', opacity: 0, offset: 1 }
+    ],
+    { duration: 1100, easing: 'ease-out', fill: 'forwards' }
+  );
+
+  anim.onfinish = () => {
+    stamp.remove();
+    passportEl.classList.remove('passport-shake');
+    visitsRef.child(from).child('history').push(visitTimestamp);
+  };
+}
 
 function updateCounter(player) {
   const el = document.getElementById(`counter-${player}`);
